@@ -1,0 +1,68 @@
+server:
+  port: 8088 # port 8080, 8083, 8082, 8081 모두 연결해주는 port 번호
+  # uri -> localhost:8088
+
+---
+
+spring:
+  profiles: default
+  cloud:
+    gateway:
+      routes:
+        - id: backend
+          uri: http://localhost:8080 # backend core file uri
+          predicates:
+            - Path=/cats/**, /pets/**, /dogs/** # path example: localhost:8080/cats/__
+        - id: backend-subdomain
+          uri: http://localhost:8083 # backend sub file uri
+          predicates:
+            - Path=/customers/**, /cartItems/** # path example: localhost:8083/custoemrs/__
+        - id: frontend
+          uri: http://localhost:8082 #frontend sub file uri 
+          #-> core file 보다 위에 위치해야만 sub file uri 부터 가능
+          predicates:
+            - Path=/shop/**, /shop/js/** # path example: localhost:8082/shop/__
+        - id: frontend
+          uri: http://localhost:8081 #frontend core file uri
+          predicates:
+            - Path=/** #path example : localhost:8081
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+
+---
+
+spring:
+  profiles: docker
+  cloud:
+    gateway:
+      routes:
+        - id: BoundedContext576
+          uri: http://BoundedContext576:8080
+          predicates:
+            - Path= 
+        - id: frontend
+          uri: http://frontend:8080
+          predicates:
+            - Path=/**
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+server:
+  port: 8080 # server core file port number
